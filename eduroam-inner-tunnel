@@ -1,0 +1,33 @@
+server eduroam-inner-tunnel {
+
+authorize {
+
+        auth_log
+        eap {
+                ok = return
+        }
+        suffix
+        ldap
+        mschap
+        pap
+        #suffix
+}
+
+authenticate {
+
+        eap
+
+        Auth-Type PAP {
+               pap
+        }
+
+        Auth-Type MS-CHAP {
+               mschap
+        }
+
+       mschap
+       Auth-Type LDAP {
+                 ldap
+      }
+}
+}
