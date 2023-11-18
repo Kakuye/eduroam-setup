@@ -51,9 +51,56 @@ sudo nano /etc/freeradius/3.0/clients.conf
 sudo nano /etc/freeradius/3.0/proxy.conf
 ```
 
-#### Configure certificate
+#### Configure SSL Certificate for FreeRADIUS Server:
+1. Open the 'ca.cnf' file for editing using the command:
 
+```bash
+sudo nano /etc/freeradius/3.0/certs/ca.cnf
+```
+2. Update the details within the file (Country Name should be ET) with your email and institution information.
+3. Generate 'ca.pem' and 'ca.der' files:
 
+```bash
+cd /etc/freeradius/3.0/certs/
+sudo make ca.pem
+sudo make ca.der
+```
+4. Edit the 'server.cnf' file to align with the changes made in 'ca.cnf':
 
+```bash
+sudo nano /etc/freeradius/3.0/certs/server.cnf
+```
+5. Ensure the values in 'server.cnf' match those in 'ca.cnf':
+6. Generate 'server.pem':
+
+```bash
+cd /etc/freeradius/3.0/certs/
+sudo make server.pem
+```
+7. Set appropriate file ownership within the '/etc/freeradius/3.0/certs/' directory:
+
+```bash
+sudo chown freerad:freerad ca.*
+sudo chown freerad:freerad server.*
+sudo chown freerad:freerad index.*
+```
+
+#### Setup Testing with 'rad_eap_test':
+1. Install necessary packages:
+
+```bash
+sudo apt install libnl-genl-3-200 libpcsclite1
+```
+2. Install 'git' and clone 'rad_eap_test':
+
+```bash
+sudo apt install git
+git clone https://github.com/CESNET/rad_eap_test.git
+```
+3. Copy the 'eapol_test' binary to '/usr/local/bin/':
+```bash
+cd rad_eap_test
+sudo cp bin/eapol_test /usr/local/bin/
+```
 
 
