@@ -7,7 +7,7 @@
 
 Installation of all necessary packages
 
-For this particular configuration, I am utilizing an Ubuntu 18.04 server that has been configured with a public IP address,and I'm using abc university as an example i.e with domain name abc.edu.etc. So when trying to copy some files please try to change the domain name based on your domain name.
+For this particular configuration, I am utilizing an Ubuntu 18.04 server that has been configured with a public IP address,and I'm using EthERNet(Ethiopian Education and Research Network) as an example i.e with domain name ethernet.edu.etc. So when trying to copy some files please try to change the domain name based on your domain name.
 
 To proceed, execute the following command:
 ```bash
