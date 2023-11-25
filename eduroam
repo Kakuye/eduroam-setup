@@ -45,7 +45,7 @@ listen {
 
         authorize {
                 update request {
-                        &Operator-Name := "1haramaya.edu.et"
+                        &Operator-Name := "1ethernet.edu.et"
                 #        # the literal number "1" above is an important prefix! Do not change it!
                 }
 
