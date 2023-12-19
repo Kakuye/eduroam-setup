@@ -44,7 +44,8 @@ sudo nano /etc/freeradius/3.0/mods-config/attr_filter/pre-proxy
 sudo echo "" > /etc/freeradius/3.0/mods-available/eap
 sudo nano /etc/freeradius/3.0/mods-available/eap
 ```
-#### Update the ldap module,use the attached file as an example and create a symbolic link to mods-enabled. But try to update the file based on your server info.
+#### Update the ldap module
+Use the attached file as an example and create a symbolic link to mods-enabled. But try to update the file based on your server info.
 ```bash
 sudo nano /etc/freeradius/3.0/mods-available/ldap
 cd /etc/freeradius/3.0/mods-enabled/
