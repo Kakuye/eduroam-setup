@@ -39,6 +39,12 @@ sudo nano /etc/freeradius/3.0/sites-enabled/eduroam-inner-tunnel
 sudo echo "" > /etc/freeradius/3.0/mods-config/attr_filter/pre-proxy
 sudo nano /etc/freeradius/3.0/mods-config/attr_filter/pre-proxy
 ```
+### Update the eap file with the attached file.
+```bash
+sudo echo "" > /etc/freeradius/3.0/mods-available/eap
+sudo nano /etc/freeradius/3.0/mods-available/eap
+```
+
 #### Configure proxy.conf and clients.conf files.
 ```bash
 sudo rm /etc/freeradius/3.0/clients.conf
