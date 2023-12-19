@@ -33,12 +33,6 @@ sudo nano /etc/freeradius/3.0/sites-enabled/eduroam
 ```bash
 sudo nano /etc/freeradius/3.0/sites-enabled/eduroam-inner-tunnel
 ```
-
-#### Update the pre-proxy file with the attached file. 
-```bash
-sudo echo "" > /etc/freeradius/3.0/mods-config/attr_filter/pre-proxy
-sudo nano /etc/freeradius/3.0/mods-config/attr_filter/pre-proxy
-```
 #### Update the eap file with the attached file.
 ```bash
 sudo echo "" > /etc/freeradius/3.0/mods-available/eap
@@ -50,6 +44,12 @@ Use the attached file as an example and create a symbolic link to mods-enabled. 
 sudo nano /etc/freeradius/3.0/mods-available/ldap
 cd /etc/freeradius/3.0/mods-enabled/
 ln -s ../mods-available/ldap .
+```
+
+#### Update the pre-proxy file with the attached file. 
+```bash
+sudo echo "" > /etc/freeradius/3.0/mods-config/attr_filter/pre-proxy
+sudo nano /etc/freeradius/3.0/mods-config/attr_filter/pre-proxy
 ```
 
 #### Configure proxy.conf and clients.conf files.
