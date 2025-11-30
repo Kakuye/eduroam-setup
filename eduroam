@@ -1,103 +1,168 @@
 server eduroam {
 
+#
+# LISTEN SECTIONS
+# -------------------------------------------------------------------
+# IPv4 Authentication
 listen {
-	type = auth
-	ipaddr = *
-	port = 0
-	limit {
-	      max_connections = 16
-	      lifetime = 0
-	      idle_timeout = 30
-	}
+        type = auth
+        ipaddr = *
+        port = 1812
+        limit {
+              max_connections = 16
+              lifetime = 0
+              idle_timeout = 30
+        }
 }
 
+# IPv4 Accounting
 listen {
-	ipaddr = *
-	port = 0
-	type = acct
-
-	limit {
-	}
+        type = acct
+        ipaddr = *
+        port = 1813
+        limit {
+              max_connections = 16
+              lifetime = 0
+              idle_timeout = 30
+        }
 }
 
+# IPv6 Authentication
 listen {
-	type = auth
-	ipv6addr = ::	# any.  ::1 == localhost
-	port = 0
-	limit {
-	      max_connections = 16
-	      lifetime = 0
-	      idle_timeout = 30
-	}
+        type = auth
+        ipv6addr = ::
+        port = 1812
 }
 
+# IPv6 Accounting
 listen {
-	ipv6addr = ::
-	port = 0
-	type = acct
-
-	limit {
-	}
+        type = acct
+        ipv6addr = ::
+        port = 1813
 }
 
-
-
-
-        authorize {
-                update request {
-                        &Operator-Name := "1ethernet.edu.et"
-                #        # the literal number "1" above is an important prefix! Do not change it!
-                }
-
-                preprocess
-                chap
-                mschap
-                suffix
-                eap {
-                    ok = return
-                }
-                pap
-                auth_log
-
+#
+# AUTHORIZE SECTION
+# -------------------------------------------------------------------
+authorize {
+        update request {
+                Operator-Name := "1ethernet.edu.et"
         }
 
-        authenticate {
-                eap
+        filter_username
+        preprocess
+        chap
+        mschap
+        digest
+        suffix
 
+        eap {
+                ok = return
+        }
+
+        files
+        -sql
+        ldap
+        expiration
+        logintime
+
+        if (User-Password) {
+            update control {
+                   Auth-Type := ldap
+            }
+        }
+
+        pap
+}
+
+#
+# AUTHENTICATE SECTION
+# -------------------------------------------------------------------
+authenticate {
+        Auth-Type PAP {
+                ldap
+        }
+        Auth-Type CHAP {
+                chap
+        }
         Auth-Type MS-CHAP {
                 mschap
         }
 
         mschap
+        digest
+        ldap
+        eap
+}
 
-        }
+#
+# PREACCT SECTION
+# -------------------------------------------------------------------
+preacct {
+        preprocess
+        acct_unique
+        suffix
+        files
+}
 
-        preacct {
-                suffix
-                #acct_unique
-        }
+#
+# ACCOUNTING SECTION
+# -------------------------------------------------------------------
+accounting {
+        detail
+        unix
+        -sql
+        exec
+        attr_filter.accounting_response
+}
 
-        accounting {
-                #eduroam_accounting
-        }
-        post-auth {
-                reply_log
-                #f_ticks
-                Post-Auth-Type REJECT {
-                        reply_log
-                        #f_ticks
+#
+# SESSION SECTION
+# -------------------------------------------------------------------
+session {
+}
+
+#
+# POST-AUTH SECTION
+# -------------------------------------------------------------------
+post-auth {
+
+        if (session-state:User-Name && reply:User-Name && request:User-Name && (reply:User-Name == request:User-Name)) {
+                update reply {
+                        &User-Name !* ANY
                 }
         }
 
-        pre-proxy {
-                pre_proxy_log
-                if("%{Packet-Type}" != "Accounting-Request") {
-                        attr_filter.pre-proxy
-                }
+        update {
+                &reply: += &session-state:
         }
 
-        post-proxy {
-                post_proxy_log
-                attr_filter.post-proxy
+        -sql
+        exec
+        remove_reply_message_if_eap
+
+        Post-Auth-Type REJECT {
+                -sql
+                attr_filter.access_reject
+                eap
+                remove_reply_message_if_eap
+        }
+
+        Post-Auth-Type Challenge {
         }
 }
+
+#
+# PRE-PROXY SECTION
+# -------------------------------------------------------------------
+pre-proxy {
+}
+
+#
+# POST-PROXY SECTION
+# -------------------------------------------------------------------
+post-proxy {
+        eap
+}
+
+}   # END server eduroam
