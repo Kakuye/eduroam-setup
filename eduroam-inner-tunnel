@@ -1,33 +1,81 @@
 server eduroam-inner-tunnel {
-
+listen {
+       ipaddr = *
+       port = 18120
+       type = auth
+}
 authorize {
-
-        auth_log
+        filter_username
+        filter_inner_identity
+        chap
+        mschap
+        suffix
+        update control {
+                &Proxy-To-Realm := LOCAL
+        }
         eap {
                 ok = return
         }
-        suffix
+        files
+        -sql
         ldap
-        mschap
+        expiration
+        logintime
+        if (User-Password) {
+            update control {
+                   Auth-Type := ldap
+            }
+        }
         pap
-        #suffix
 }
-
 authenticate {
-
-        eap
-
         Auth-Type PAP {
-               pap
+                ldap
         }
-
+        Auth-Type CHAP {
+                chap
+        }
         Auth-Type MS-CHAP {
-               mschap
+                mschap
         }
-
-       mschap
-       Auth-Type LDAP {
-                 ldap
-      }
+        mschap
+        ldap
+        eap
+}
+session {
+        radutmp
+}
+post-auth {
+        update outer.session-state {
+               User-Name := &User-Name
+        }
+        -sql
+        if (1) {
+                update reply {
+                        User-Name !* ANY
+                        Message-Authenticator !* ANY
+                        EAP-Message !* ANY
+                        Proxy-State !* ANY
+                        MS-MPPE-Encryption-Types !* ANY
+                        MS-MPPE-Encryption-Policy !* ANY
+                        MS-MPPE-Send-Key !* ANY
+                        MS-MPPE-Recv-Key !* ANY
+                }
+                update {
+                        &outer.session-state: += &reply:
+                }
+        }
+        Post-Auth-Type REJECT {
+                -sql
+                attr_filter.access_reject
+                update outer.session-state {
+                        &Module-Failure-Message := &request:Module-Failure-Message
+                }
+        }
+}
+pre-proxy {
+}
+post-proxy {
+        eap
 }
 }
